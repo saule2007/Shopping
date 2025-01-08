@@ -1,0 +1,187 @@
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+// Assignment 1:
+public class Item {
+    private String name;
+    private double price;
+
+    public Item(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return "Item{name='" + name + "', price=" + price + '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Item item = (Item) obj;
+        return Double.compare(item.price, price) == 0 && name.equals(item.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, price);
+    }
+}
+
+// Assignment 1: 
+public class Customer {
+    private String name;
+    private String phoneNumber;
+
+    public Customer(String name, String phoneNumber) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{name='" + name + "', phoneNumber='" + phoneNumber + "'}";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Customer customer = (Customer) obj;
+        return name.equals(customer.name) && phoneNumber.equals(customer.phoneNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, phoneNumber);
+    }
+}
+
+// Assignment 1:
+public class Order {
+    private Customer customer;
+    private List<Item> items;
+
+    public Order(Customer customer, List<Item> items) {
+        this.customer = customer;
+        this.items = items;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    // Assignment 2: 
+    public List<Item> filterItemsByPrice(double minPrice) {
+        return items.stream()
+                .filter(item -> item.getPrice() >= minPrice)
+                .collect(Collectors.toList());
+    }
+
+   
+    public Item searchItemByName(String name) {
+        return items.stream()
+                .filter(item -> item.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public List<Item> sortItemsByPrice() {
+        return items.stream()
+                .sorted(Comparator.comparingDouble(Item::getPrice))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "customer=" + customer +
+                ", items=" + items +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Order order = (Order) obj;
+        return customer.equals(order.customer) && items.equals(order.items);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(customer, items);
+    }
+}
+
+// Assignment 1  
+public class Main {
+    public static void main(String[] args) {
+        Item item1 = new Item("Laptop", 999.99);
+        Item item2 = new Item("Phone", 499.99);
+
+        Customer customer = new Customer("Karimova Saule", "+7777 888 99 99");
+
+        List<Item> items = new ArrayList<>();
+        items.add(item1);
+        items.add(item2);
+        
+        Order order = new Order(customer, items);
+
+        System.out.println(order);
+
+        // Assignment 2
+        System.out.println("Filtered Items (price >= 500): " + order.filterItemsByPrice(500));
+        System.out.println("Search Item by Name 'Phone': " + order.searchItemByName("Phone"));
+        System.out.println("Sorted Items by Price: " + order.sortItemsByPrice());
+    }
+}
