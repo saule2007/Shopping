@@ -1,0 +1,95 @@
+package bankaccounts;
+
+import java.sql.*;
+
+public class BankAccounts { // Class name should follow Java naming conventions (PascalCase)
+
+    private static final String URL = "jdbc:postgresql://localhost:5432/Shopping System";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "2016";
+
+    public static Connection connect() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+
+    public static void insertCustomer(int customer_id, String name, String phoneNumber) {
+        String sql = "INSERT INTO Customer (id, name, phone_number) VALUES (?, ?, ?)";
+        try (Connection conn = connect();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setInt(1, customer_id);
+            pst.setString(2, name);
+            pst.setString(3, phoneNumber);
+            pst.executeUpdate();
+            System.out.println("Customer " + name + " added.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void insertItem(int item_id, String name, double price) {
+        String sql = "INSERT INTO Item (id, name, price) VALUES (?, ?, ?)";
+        try (Connection conn = connect();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setInt(1, item_id);
+            pst.setString(2, name);
+            pst.setDouble(3, price);
+            pst.executeUpdate();
+            System.out.println("Item " + name + " added.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void insertOrder(int order_id, int customer_id) {
+        String sql = "INSERT INTO OrderTable (id, customer_id) VALUES (?, ?)";
+        try (Connection conn = connect();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setInt(1, order_id);
+            pst.setInt(2, customer_id);
+            pst.executeUpdate();
+            System.out.println("Order ID " + order_id + " added.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void insertOrderItem(int order_id, int item_id) {
+        String sql = "INSERT INTO OrderItem (order_id, item_id) VALUES (?, ?)";
+        try (Connection conn = connect();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setInt(1, order_id);
+            pst.setInt(2, item_id);
+            pst.executeUpdate();
+            System.out.println("OrderItem relation (Order " + order_id + ", Item " + item_id + ") added.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private static void readData(Connection conn) throws SQLException {
+        String query = "SELECT * FROM Customer";
+        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                System.out.println("ID: " + rs.getInt("id") + ", Name: " + rs.getString("name") + ", Email: " + rs.getString("email"));
+            }
+        }
+    }
+
+    private static void updateData(Connection conn, int id, String newName) throws SQLException {
+        String updateSQL = "UPDATE Customer SET name = ? WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
+            pstmt.setString(1, newName);
+            pstmt.setInt(2, id);
+            pstmt.executeUpdate();
+            System.out.println("Updated ID " + id + " to " + newName);
+        }
+    }
+
+    private static void deleteData(Connection conn, int id) throws SQLException {
+        String deleteSQL = "DELETE FROM Customer WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(deleteSQL)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+            System.out.println("Deleted ID " + id);
+        }
+    }
+}
